@@ -11,12 +11,17 @@ import UIKit
 class ContactsTableViewController: UITableViewController {
     
     var contacts:[Contact] = []
+    var moveButton: UIBarButtonItem?
+    var doneButton: UIBarButtonItem?
+    var addButton: UIBarButtonItem?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let moveButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(ContactsTableViewController.toggleEdit))
-        //moveButton.title = "Rearrange"
+        moveButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(ContactsTableViewController.toggleEdit))
+        doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(ContactsTableViewController.toggleEdit))
+        addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(ContactsTableViewController.addContact))
+        navigationItem.rightBarButtonItem = addButton
         navigationItem.leftBarButtonItem = moveButton
         
         let jake = Contact(name: "Jake the Snake", phoneNumber: "309-555-1234")
@@ -42,11 +47,21 @@ class ContactsTableViewController: UITableViewController {
         tableView.setEditing(!tableView.isEditing, animated: true)
         if tableView.isEditing {
             //self.editButtonItem.title = "Done"
+            //moveButton!.style = .done
+            navigationItem.leftBarButtonItem = doneButton
         } else {
             //self.editButtonItem.title = "Edit2"
+            //moveButton!.style = .plain
+            navigationItem.leftBarButtonItem = moveButton
         }
     }
 
+    func addContact() {
+        let newContact = Contact(name: "New Contact")
+        self.contacts.append(newContact)
+        let newIndexPath = IndexPath(row: self.contacts.count - 1, section: 0)
+        self.tableView.insertRows(at: [newIndexPath], with: .automatic)
+    }
     
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
         if tableView.isEditing {
@@ -142,5 +157,9 @@ class ContactsTableViewController: UITableViewController {
         destination.contact = contact
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
 
 }
